@@ -20,13 +20,15 @@ import numpy as np
 import wcslib as wcs
 
 
+# \frac{At}{2}\frac{\sin\left(xt-2\pi\right)}{xt-2\pi}+\frac{At}{2}\frac{\sin\left(xt+2\pi\right)}{xt+2\pi}
+
 def main():
     # Parameters
     # TODO: Add your parameters here. You might need to add other parameters as 
     # well.
-    #channel_id = ...   # Your channel ID
-    #Tb = ...           # Symbol width in seconds
-    #fs = ...           # Sampling frequency in Hz
+    #channel_id = 30      # Your channel ID
+    #Tb = 0.01            # Symbol width in seconds
+    #fs = 10000           # Sampling frequency in Hz
     # ...
 
     # Detect input or set defaults
@@ -37,6 +39,11 @@ def main():
     elif len(sys.argv) == 3 and str(sys.argv[1]) == '-b':
         string_data = False
         data = str(sys.argv[2])
+
+    elif len(sys.argv) == 6:
+        channel_id = str(sys.argv[3])
+        Tb = str(sys.argv[4])
+        fs = str(sys.argv[5])
 
     else:
         print('Warning: No input arguments, using defaults.', file=sys.stderr)
@@ -54,6 +61,13 @@ def main():
 
     # TODO: Put your transmitter code here (feel free to modify any other parts
     # too, of course)
+
+    def xm(xb, f_c, tarr, A_c):
+        xm_arr = np.zeros(len(xb))
+        w_c = fc * 2 * np.pi
+        for i, (x, t) in enumerate(zip(xb, tarr)):
+            xm_arr[i] = x*(np.sin(w_c*t))
+        return xm_arr
 
     # Channel simulation
     # TODO: Enable channel simulation.
