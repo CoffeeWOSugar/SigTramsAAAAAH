@@ -30,7 +30,7 @@ def Xm(w,i):
 #np.array([Xm(w) for w in w_arr])
 for j in [1, 10]:
     print(j)
-    result = np.zeros(len(w_arr), dtype=float128)
+    result = np.zeros(len(w_arr), dtype="float128")
     for i,w in enumerate(w_arr):
         result[i] = Xm(w,j)
     plt.plot(w_arr, result, label="Xm(w)")
