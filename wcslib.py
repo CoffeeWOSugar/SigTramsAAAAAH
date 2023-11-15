@@ -10,6 +10,7 @@ import numpy as np
 from scipy import signal
 from scipy.stats import chi2
 
+
 # List of channels and their max average power [fl, fu, Pmax]^T
 _channels = np.array([
     [np.nan,  900, 1150, 1300, 1550, 1725, 1950, 2100, 2400, 2700, 3050, 3200, 3475, 3550, 3750, 3900, 4150, 4300, 4550, 4750, 4900, 5200],
