@@ -32,10 +32,10 @@ plt.clf()
 
 
 lp_wp = 8200*np.pi
-lp_ws = 15600*np.pi
+lp_ws = 16000*np.pi
 
 lp_Ap = 0.1
-lp_As = 40
+lp_As = 45 
 
 lp_Nc, lp_wn = signal.buttord(lp_wp, lp_ws, lp_Ap, lp_As, analog=True)     # filter order
 
