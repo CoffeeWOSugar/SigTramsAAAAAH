@@ -31,11 +31,11 @@ plt.savefig("Bandpass")
 plt.clf()
 
 
-lp_wp = 8200*np.pi
-lp_ws = 16000*np.pi
+lp_wp = 200*np.pi
+lp_ws = 15600*np.pi
 
 lp_Ap = 0.1
-lp_As = 45 
+lp_As = 40
 
 lp_Nc, lp_wn = signal.buttord(lp_wp, lp_ws, lp_Ap, lp_As, analog=True)     # filter order
 
@@ -45,10 +45,10 @@ lp_bc, lp_ac = signal.butter(lp_Nc, lp_wn, analog=True)                     # fi
 
 print(lp_bc, lp_ac)
 
-lp_wc, lp_Hc = signal.freqs(lp_bc, lp_ac, np.logspace(3, 5, 500))           # freq response
+lp_wc, lp_Hc = signal.freqs(lp_bc, lp_ac, np.logspace(0, 5, 500))           # freq response
 
 plt.plot(lp_wc, 20 * np.log10(abs(lp_Hc)), label='Frequency response of lowpass filter')
-plt.axvline(8000*np.pi, color='black', linestyle='--', label='$\omega_c$')
+plt.axvline(200*np.pi, color='black', linestyle='--', label='Bandwidth of baseband signal')
 plt.axvline(16000*np.pi, color='red', linestyle='--', label='$2\omega_c$')
 plt.xscale('log')
 plt.xlabel('Frequency [rad/s]')
