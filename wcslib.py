@@ -339,3 +339,5 @@ def simulate_channel(x, fs: float, channel_id: int, SNR: float=20.0, eta: float=
     y = signal.lfilter(h, 1, x) + vn + vi
 
     return y
+
+

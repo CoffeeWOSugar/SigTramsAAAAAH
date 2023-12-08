@@ -15,7 +15,7 @@ $ python3 simulation.py -b 010010000110100100100001
 
 import sys
 import numpy as np
-#from scipy import signal
+from scipy import signal
 #import matplotlib.pyplot as plt
 import wcslib as wcs
 
@@ -26,10 +26,9 @@ def main():
     # Parameters
     # TODO: Add your parameters here. You might need to add other parameters as 
     # well.
-    #channel_id = 30      # Your channel ID
-    #Tb = 0.01            # Symbol width in seconds
-    #fs = 10000           # Sampling frequency in Hz
-    # ...
+    channel_id = 15      # Your channel ID
+    Tb = 0.02            # Symbol width in seconds
+    fs = 192000           # Sampling frequency in Hz
 
     # Detect input or set defaults
     string_data = True
@@ -61,12 +60,13 @@ def main():
 
     # TODO: Put your transmitter code here (feel free to modify any other parts
     # too, of course)
+    
 
-    def xm(xb, f_c, tarr, A_c):
+    def xm(xb, fc, tarr, Ac):
         xm_arr = np.zeros(len(xb))
-        w_c = fc * 2 * np.pi
+        wc = fc * 2 * np.pi
         for i, (x, t) in enumerate(zip(xb, tarr)):
-            xm_arr[i] = x*(np.sin(w_c*t))
+            xm_arr[i] = x*(np.sin(wc*t))
         return xm_arr
 
     # Channel simulation
