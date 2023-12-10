@@ -18,6 +18,8 @@ import numpy as np
 from scipy import signal
 #import matplotlib.pyplot as plt
 import wcslib as wcs
+import transmitter
+import receiver
 
 
 # \frac{At}{2}\frac{\sin\left(xt-2\pi\right)}{xt-2\pi}+\frac{At}{2}\frac{\sin\left(xt+2\pi\right)}{xt+2\pi}
@@ -28,7 +30,7 @@ def main():
     # well.
     channel_id = 15      # Your channel ID
     Tb = 0.02            # Symbol width in seconds
-    fs = 192000           # Sampling frequency in Hz
+    fs = 48_000           # Sampling frequency in Hz
 
     # Detect input or set defaults
     string_data = True
@@ -60,30 +62,29 @@ def main():
 
     # TODO: Put your transmitter code here (feel free to modify any other parts
     # too, of course)
+
+    trans = transmitter.Transmitter()
+    xt = trans.get_transmit_signal(xb)
     
-
-    def xm(xb, fc, tarr, Ac):
-        xm_arr = np.zeros(len(xb))
-        wc = fc * 2 * np.pi
-        for i, (x, t) in enumerate(zip(xb, tarr)):
-            xm_arr[i] = x*(np.sin(wc*t))
-        return xm_arr
-
     # Channel simulation
     # TODO: Enable channel simulation.
-    #yr = wcs.simulate_channel(xt, fs, channel_id)
+    yr = wcs.simulate_channel(xt, fs, channel_id)
 
     # TODO: Put your receiver code here. Replace the three lines below, they
     # are only there for illustration and as an MWE. Feel free to modify any
     # other parts of the code as you see fit, of course.
-    yb = xb*np.exp(1j*np.pi/5) + 0.1*np.random.randn(xb.shape[0])
-    ybm = np.abs(yb)
-    ybp = np.angle(yb)
+    #yb = xb*np.exp(1j*np.pi/5) + 0.1*np.random.randn(xb.shape[0])
+    #ybm = np.abs(yb)
+    #ybp = np.angle(yb)
+    #viktig kommentar
+    rec = receiver.Receiver()
+    print(rec.get_recived_data(yr))
+
 
     # Baseband and string decoding
-    br = wcs.decode_baseband_signal(ybm, ybp, Tb, fs)
-    data_rx = wcs.decode_string(br)
-    print('Received: ' + data_rx)
+    #br = wcs.decode_baseband_signal(ybm, ybp, Tb, fs)
+    #data_rx = wcs.decode_string(br)
+    #print('Received: ' + data_rx)
 
 
 if __name__ == "__main__":

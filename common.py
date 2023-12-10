@@ -20,13 +20,14 @@ Bandstop: wp = [0.1, 0.6], ws = [0.2, 0.5]
 """
 
 def band_pass_filter():
-    fs = 192_000
-    b, a = signal.iirdesign([3900/fs, 4100/fs], [3850/fs, 4150/fs], 0.1, 40, ftype='cheby1', output='ba', fs=fs)
+    fs = 48_000
+    nyq = fs/2
+    b, a = signal.iirdesign([3900/nyq, 4100/nyq], [3850/nyq, 4150/nyq], 0.1, 40)
     return b, a
 
 
 def low_pass_filter():
-    fs = 192_000
-    b, a = signal.iirdesign(100/fs, 7900*2/fs, 0.1, 40, ftype='butter', output='ba', fs=fs)
+    fs = 48_000
+    nyq = fs/2
+    b, a = signal.iirdesign(100/nyq, 7900/nyq, 0.1, 40)
     return b, a
-    
