@@ -4,18 +4,22 @@ import numpy as np
 from scipy import signal
 import transmitter
 import matplotlib.pyplot as plt
+import sounddevice as sd
+import soundfile as sf
 
 class Receiver:
     def __init__(self) -> None: ## UPPDATERA FÖR RÄTT VÄRDEN NÄR VI E KLARA MED TRANSMITTER PROBLEMEN
-        self.Tb = 0.02
-        self.Kc = 12
+        self.Tb = 0.03
+        self.Kc = 8
         self.OMEGAc = 2*np.pi/self.Kc
-        self.fs = 48_000
+        self.fs = 32_000
         self.Ts = 1/self.fs
         self.fc = 4000
         self.wc = 8000*np.pi
         self.b_b, self.a_b = common.band_pass_filter()
         self.b_l, self.a_l = common.low_pass_filter()
+        self.is_recording = False
+        self.recording = None
 
 
     def band_limit(self, input_signal):
@@ -34,15 +38,11 @@ class Receiver:
         return yib +1j*yqb
     
     def get_recived_data(self, yr):
-        k = np.arange(0, yr.shape[0])
-        plt.plot(k, yr)
-        plt.savefig("4")
-        plt.clf()
         ym = self.band_limit(yr)
         yb = self.demodulate(ym)
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
-        str = wcs.decode_string(b)
-        return str
+        decoeded_str = wcs.decode_string(b)
+        return decoeded_str
     
     def graph_test(self):
         tr = transmitter.Transmitter()
@@ -68,10 +68,61 @@ class Receiver:
         plt.savefig("7")
         str = wcs.decode_string(b)
         return str
+
+
+    def receive_once(self):
+        rec = sd.rec(20*self.fs, samplerate=self.fs, channels=2)
+        print("Recording has started")
+        sd.wait()
+        print("Recording has stopped")
+        rec = np.sum(rec, 1)
+
+        #rec, _ = sf.read("fil.wav")
+
+        k = np.arange(0, rec.shape[0])
+        plt.plot(k, rec)
+        plt.savefig("1")
+        plt.clf()       
+        ym = self.band_limit(rec)
+        plt.plot(k, ym)
+        plt.savefig("2")
+        plt.clf()
+
+        
+        yb = self.demodulate(ym)
+        plt.plot(k, np.abs(yb))
+        plt.savefig("3.1.png")
+        plt.clf()
+        plt.plot(k, np.angle(yb))
+        plt.savefig("3.2.png")
+        plt.clf()
+
+        b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
+        k = np.arange(0, b.shape[0])
+        plt.plot(k, b)
+        plt.savefig("4")
+        str = wcs.decode_string(b)
+        print(str)
+        return str, False
+
+        
+        
+
+    def rec_stream(self):
+        return
+
+    
+
     
 def main():
+    
     re = Receiver()
-    print(re.graph_test())
+    #re.graph_test()
+    #exit()
+    with open("Recived_message.txt", "w") as f:
+        txt, success = re.receive_once()
+        if success:
+            f.write(txt)
 
 
 if __name__ == "__main__":

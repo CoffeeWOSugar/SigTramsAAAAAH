@@ -1,16 +1,18 @@
 import common
 import wcslib as wcs
 import numpy as np
+import soundfile as sf
 from scipy import signal
 import matplotlib.pyplot as plt
 import sounddevice as sd
 
+
 class Transmitter:
     def __init__(self) -> None:
-        self.Tb = 0.02
-        self.Kc = 12
+        self.Tb = 0.03
+        self.Kc = 8
         self.OMEGAc = 2*np.pi/self.Kc
-        self.fs = 48_000
+        self.fs = 32_000
         self.Ts = 1/self.fs
         self.fc = 4000
         self.wc = 8000*np.pi
@@ -32,12 +34,15 @@ class Transmitter:
 
     def do_you_enjoy_sounding(self, data):
         bits = wcs.encode_string(data)
+        bits = np.concatenate((np.zeros(8), bits))
         xb = wcs.encode_baseband_signal(bits, self.Tb, self.fs)
-        lst = xb.tolist()
-        lst = [0 for _ in range(self.Kc*100)] + lst + [0 for _ in range(self.Kc*100)]
-        xb = np.array(lst)
+        xb = np.concatenate((np.zeros(self.Kc*100), xb, np.zeros(self.Kc*100)))
         xm = self.modulate(xb)
         xt = signal.lfilter(self.b, self.a, xm)
+        #sf.write("fil.wav",xt, self.fs)
+        k = np.arange(0, 64000)
+        brus_k = brus(k/self.fs)
+        xt = np.concatenate((brus_k, xt, brus_k))
         sd.play(xt, self.fs, blocking=True)
 
     def graph_test(self):
@@ -64,13 +69,15 @@ class Transmitter:
         plt.clf()
         return xt
         
-
+def brus(k):
+    return np.sin(500*2*np.pi*k)
 
 def main():
     tr = Transmitter()
     #tr.graph_test()
     with open("message.txt", "r") as f:
         txt = f.read()
+        txt = "Spageth monster gillar att eat bjorns spageth"
         tr.do_you_enjoy_sounding(txt)
     
 

@@ -29,8 +29,8 @@ def main():
     # TODO: Add your parameters here. You might need to add other parameters as 
     # well.
     channel_id = 15      # Your channel ID
-    Tb = 0.02            # Symbol width in seconds
-    fs = 48_000           # Sampling frequency in Hz
+    Tb = 0.03            # Symbol width in seconds
+    fs = 32_000           # Sampling frequency in Hz
 
     # Detect input or set defaults
     string_data = True
