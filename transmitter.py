@@ -3,6 +3,7 @@ import wcslib as wcs
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
+import sounddevice as sd
 
 class Transmitter:
     def __init__(self) -> None:
@@ -28,6 +29,16 @@ class Transmitter:
         k = np.arange(0, xb.shape[0])
         xc = self.Ac*np.sin(k*self.OMEGAc)
         return xc*xb
+
+    def do_you_enjoy_sounding(self, data):
+        bits = wcs.encode_string(data)
+        xb = wcs.encode_baseband_signal(bits, self.Tb, self.fs)
+        lst = xb.tolist()
+        lst = [0 for _ in range(self.Kc*100)] + lst + [0 for _ in range(self.Kc*100)]
+        xb = np.array(lst)
+        xm = self.modulate(xb)
+        xt = signal.lfilter(self.b, self.a, xm)
+        sd.play(xt, self.fs, blocking=True)
 
     def graph_test(self):
         bits = wcs.encode_string("Absolut vodka")
@@ -57,7 +68,9 @@ class Transmitter:
 
 def main():
     tr = Transmitter()
-    tr.graph_test()
+    #tr.graph_test()
+    f = open("message.txt")
+    tr.do_you_enjoy_sounding("Absolut vodka")
 
 if __name__ == "__main__":
     main()

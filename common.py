@@ -28,6 +28,6 @@ def band_pass_filter():
 
 def low_pass_filter():
     fs = 48_000
-    nyq = fs/2
-    b, a = signal.iirdesign(100, 7900, 0.1, 40, fs=fs, analog=False)
+    nyq = fs/2                  #7900
+    b, a = signal.iirdesign(100, 1000, 0.1, 40, fs=fs, analog=False)
     return b, a
