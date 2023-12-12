@@ -69,8 +69,10 @@ class Transmitter:
 def main():
     tr = Transmitter()
     #tr.graph_test()
-    f = open("message.txt")
-    tr.do_you_enjoy_sounding("Absolut vodka")
+    with open("message.txt", "r") as f:
+        txt = f.read()
+        tr.do_you_enjoy_sounding(txt)
+    
 
 if __name__ == "__main__":
     main()
