@@ -78,6 +78,7 @@ def main():
     with open("message.txt", "r") as f:
         txt = f.read()
         txt = "Spageth monster gillar att eat bjorns spageth"
+        txt = "cum cum cum"
         tr.do_you_enjoy_sounding(txt)
     
 
