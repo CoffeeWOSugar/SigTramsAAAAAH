@@ -39,14 +39,23 @@ class Transmitter:
         xb = np.concatenate((np.zeros(self.Kc*100), xb, np.zeros(self.Kc*100)))
         xm = self.modulate(xb)
         xt = signal.lfilter(self.b, self.a, xm)
-        #sf.write("fil.wav",xt, self.fs)
-        k = np.arange(0, 64000)
-        brus_k = brus(k/self.fs)
-        xt = np.concatenate((brus_k, xt, brus_k))
-        sd.play(xt, self.fs, blocking=True)
+        
+        sf.write("fil.wav",xm, self.fs)
+        #k = np.arange(0, 64000)
+        #brus_k = brus(k/self.fs)
+        #xt = np.concatenate((brus_k, xt, brus_k))
+        #sd.play(xm, self.fs, blocking=True)
+        x, t, _ = signal.spectrogram(xm, 32000)
+        plt.plot(x, t)
+        plt.savefig("trans2")
+        plt.clf()
+
+        plt.plot(range(0, xm.shape[0]), xm)
+        plt.savefig("trans")
+        plt.clf()
 
     def graph_test(self):
-        bits = wcs.encode_string("Absolut vodka")
+        bits = wcs.encode_string("cum cum cum")
         k = np.arange(0, bits.shape[0])
         plt.plot(k, bits)
         plt.savefig("1")
@@ -75,6 +84,7 @@ def brus(k):
 def main():
     tr = Transmitter()
     #tr.graph_test()
+    #exit()
     with open("message.txt", "r") as f:
         txt = f.read()
         txt = "Spageth monster gillar att eat bjorns spageth"
