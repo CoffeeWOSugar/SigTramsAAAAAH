@@ -2,10 +2,12 @@ import common
 import wcslib as wcs
 import numpy as np
 from scipy import signal
+from scipy import fft
 import transmitter
 import matplotlib.pyplot as plt
 import sounddevice as sd
 import soundfile as sf
+
 
 class Receiver:
     def __init__(self) -> None: ## UPPDATERA FÖR RÄTT VÄRDEN NÄR VI E KLARA MED TRANSMITTER PROBLEMEN
@@ -35,7 +37,7 @@ class Receiver:
         yqd = -band_limited_signal*np.sin(k*self.OMEGAc)
         return yid, yqd
     
-    def low_pass_IQ(i, q):
+    def low_pass_IQ(self, i, q):
         yib = self.low_pass(i)
         yqb = self.low_pass(q)
         return yib + 1j*yqb
@@ -77,8 +79,12 @@ class Receiver:
         print(b)
         return b
 
+    def plot(self, name, x, y):
+        plt.plot(x, y)
+        plt.savefig(name + ".png")
+        plt.clf()
 
-    def record(time):
+    def record(self, time):
         rec = sd.rec(time*self.fs, samplerate=self.fs, channels=1)
         print("Recording has started")
         sd.wait()
@@ -86,7 +92,7 @@ class Receiver:
         return rec.flatten()
 
     def receive_once(self):
-        rec = record(5)
+        rec = self.record(5)
 
         k = np.arange(0, rec.shape[0])
         self.plot("1", k, rec)    
@@ -95,22 +101,21 @@ class Receiver:
         self.plot("2", k, ym)
 
         yid, yqd = self.demodulate(ym)
+        self.plot("3", k, np.abs(yid + 1j*yqd))
+
         yb = self.low_pass_IQ(yid, yqd)
-        self.plot("3.1", k, np.abs(yb))
-        self.plot("3.2", k, np.angle(yb))
+        self.plot("4.1", k, np.abs(yb))
+        self.plot("4.2", k, np.angle(yb))
 
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
         k = np.arange(0, b.shape[0])
-        self.plot("4", k, b)
+        self.plot("5", k, b)
 
         str = wcs.decode_string(b)
         print(str)
         return str, False
 
-    def plot(name, x, y):
-        plt.plot(x, y)
-        plt.savefig(name)
-        plt.clf()
+
 
         
 def main():
