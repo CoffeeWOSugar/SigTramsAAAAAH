@@ -33,13 +33,17 @@ class Receiver:
         k = np.arange(0, band_limited_signal.shape[0])
         yid = band_limited_signal*np.cos(k*self.OMEGAc)
         yqd = -band_limited_signal*np.sin(k*self.OMEGAc)
-        yib = self.low_pass(yid)
-        yqb = self.low_pass(yqd)
-        return yib +1j*yqb
+        return yid, yqd
     
+    def low_pass_IQ(i, q):
+        yib = self.low_pass(i)
+        yqb = self.low_pass(q)
+        return yib + 1j*yqb
+
     def get_recived_data(self, yr):
         ym = self.band_limit(yr)
-        yb = self.demodulate(ym)
+        yid, yqd = self.demodulate(ym)
+        yb = self.low_pass_IQ(yid, yqd)
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
         decoeded_str = wcs.decode_string(b)
         return decoeded_str
@@ -55,65 +59,60 @@ class Receiver:
 
         
         yb = self.demodulate(ym)
+        #for i, e in yb:
+        #    if e > 
         plt.plot(k, np.abs(yb))
+        #plt.plot(k, np.abs(yb))
         plt.savefig("6.1.png")
         plt.clf()
-        plt.plot(k, np.angle(yb))
-        plt.savefig("6.2.png")
-        plt.clf()
+        #plt.plot(k, np.angle(yb))
+        #plt.savefig("6.2.png")
+        #plt.clf()
 
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
         k = np.arange(0, b.shape[0])
         plt.plot(k, b)
         plt.savefig("7")
         str = wcs.decode_string(b)
-        return str
+        print(b)
+        return b
 
 
-    def receive_once(self):
-        rec = sd.rec(20*self.fs, samplerate=self.fs, channels=2)
+    def record(time):
+        rec = sd.rec(time*self.fs, samplerate=self.fs, channels=1)
         print("Recording has started")
         sd.wait()
         print("Recording has stopped")
-        rec = np.sum(rec, 1)
+        return rec.flatten()
 
-        #rec, _ = sf.read("fil.wav")
+    def receive_once(self):
+        rec = record(5)
 
         k = np.arange(0, rec.shape[0])
-        plt.plot(k, rec)
-        plt.savefig("1")
-        plt.clf()       
-        ym = self.band_limit(rec)
-        plt.plot(k, ym)
-        plt.savefig("2")
-        plt.clf()
+        self.plot("1", k, rec)    
 
-        
-        yb = self.demodulate(ym)
-        plt.plot(k, np.abs(yb))
-        plt.savefig("3.1.png")
-        plt.clf()
-        plt.plot(k, np.angle(yb))
-        plt.savefig("3.2.png")
-        plt.clf()
+        ym = self.band_limit(rec)
+        self.plot("2", k, ym)
+
+        yid, yqd = self.demodulate(ym)
+        yb = self.low_pass_IQ(yid, yqd)
+        self.plot("3.1", k, np.abs(yb))
+        self.plot("3.2", k, np.angle(yb))
 
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
         k = np.arange(0, b.shape[0])
-        plt.plot(k, b)
-        plt.savefig("4")
+        self.plot("4", k, b)
+
         str = wcs.decode_string(b)
         print(str)
         return str, False
 
+    def plot(name, x, y):
+        plt.plot(x, y)
+        plt.savefig(name)
+        plt.clf()
+
         
-        
-
-    def rec_stream(self):
-        return
-
-    
-
-    
 def main():
     
     re = Receiver()

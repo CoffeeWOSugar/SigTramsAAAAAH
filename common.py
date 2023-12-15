@@ -25,9 +25,14 @@ def band_pass_filter():
     b, a = signal.iirdesign([3900, 4100], [3850, 4150], 0.1, 40, fs=fs, analog=False)
     return b, a
 
+def band_stop_filter():
+    fs = 32_000
+    nyq = fs/2
+    b, a = signal.iirdesign([3850, 4150], [3900, 4100], 0.1, 40, fs=fs, analog=False)
+    return b, a
 
 def low_pass_filter():
     fs = 32_000
     nyq = fs/2                  #7900
-    b, a = signal.iirdesign(100, 1000, 0.1, 40, fs=fs, analog=False)
+    b, a = signal.iirdesign(100, 7900, 0.1, 40, fs=fs, analog=False)
     return b, a

@@ -34,25 +34,24 @@ class Transmitter:
 
     def do_you_enjoy_sounding(self, data):
         bits = wcs.encode_string(data)
-        bits = np.concatenate((np.zeros(8), bits))
+        #bits = np.concatenate((np.zeros(8), bits))
+        #bits = [False, True]
         xb = wcs.encode_baseband_signal(bits, self.Tb, self.fs)
-        xb = np.concatenate((np.zeros(self.Kc*100), xb, np.zeros(self.Kc*100)))
+        #xb = np.concatenate((np.zeros(self.Kc*100), xb, np.zeros(self.Kc*100)))
+        
         xm = self.modulate(xb)
         xt = signal.lfilter(self.b, self.a, xm)
-        
-        sf.write("fil.wav",xm, self.fs)
-        #k = np.arange(0, 64000)
-        #brus_k = brus(k/self.fs)
-        #xt = np.concatenate((brus_k, xt, brus_k))
-        #sd.play(xm, self.fs, blocking=True)
-        x, t, _ = signal.spectrogram(xm, 32000)
-        plt.plot(x, t)
-        plt.savefig("trans2")
-        plt.clf()
 
-        plt.plot(range(0, xm.shape[0]), xm)
-        plt.savefig("trans")
-        plt.clf()
+        #sf.write("fil.wav",xm, self.fs)
+        #k = np.arange(0, 192000)
+        #xt = np.zeros(192000)
+        #brus_k = brus(k/self.fs)
+        xt = np.concatenate((np.zeros(32000), xt, np.zeros(32000)))
+        for i, e in enumerate(xt):
+            xt += brus(i/self.fs)
+        sf.write("fil.wav",xt, self.fs)
+        #sd.play(xm, self.fs, blocking=True)
+
 
     def graph_test(self):
         bits = wcs.encode_string("cum cum cum")
@@ -88,7 +87,7 @@ def main():
     with open("message.txt", "r") as f:
         txt = f.read()
         txt = "Spageth monster gillar att eat bjorns spageth"
-        txt = "cum cum cum"
+        txt = "a"
         tr.do_you_enjoy_sounding(txt)
     
 
