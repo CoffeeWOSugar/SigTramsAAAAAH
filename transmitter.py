@@ -42,15 +42,16 @@ class Transmitter:
         xm = self.modulate(xb)
         xt = signal.lfilter(self.b, self.a, xm)
 
-        #sf.write("fil.wav",xm, self.fs)
-        #k = np.arange(0, 192000)
-        #xt = np.zeros(192000)
-        #brus_k = brus(k/self.fs)
         xt = np.concatenate((np.zeros(32000), xt, np.zeros(32000)))
-        for i, e in enumerate(xt):
-            xt += brus(i/self.fs)
-        sf.write("fil.wav",xt, self.fs)
-        #sd.play(xm, self.fs, blocking=True)
+        k = np.arange(0, xt.shape[0])
+        brus_k = 0.2*brus(k/self.fs)
+
+        xt = xt + brus_k
+
+        #for i, e in enumerate(xt):
+        #    xt += brus(i/self.fs)
+        sf.write("fil2.wav",xt, self.fs)
+        #sd.play(xt, self.fs, blocking=True)
 
 
     def graph_test(self):
@@ -87,7 +88,7 @@ def main():
     with open("message.txt", "r") as f:
         txt = f.read()
         txt = "Spageth monster gillar att eat bjorns spageth"
-        txt = "a"
+        #txt = "a"
         tr.do_you_enjoy_sounding(txt)
     
 

@@ -92,7 +92,7 @@ class Receiver:
         return rec.flatten()
 
     def receive_once(self):
-        rec = self.record(5)
+        rec = self.record(15)
 
         k = np.arange(0, rec.shape[0])
         self.plot("1", k, rec)    
@@ -107,9 +107,42 @@ class Receiver:
         self.plot("4.1", k, np.abs(yb))
         self.plot("4.2", k, np.angle(yb))
 
+        start = 0
+        max_signal = np.max(np.abs(yb))
+        filter_signal = max_signal / 5
+        print(max_signal, filter_signal)
+        for i, e in enumerate(np.abs(yb)):
+            if e > filter_signal:
+                start = i
+                break
+
+        stop = 0
+        for i, e in enumerate(np.flip(np.abs(yb))):
+            if e > filter_signal:
+                stop = len(yb) - i
+                break
+
+        print(start, stop)
+
+        #if (start > 1000):
+        #    start = start - 1000
+        #if (stop < len(yb) ):
+        #    stop = stop + 1000
+
+        plt.plot(k, np.abs(yb))
+        plt.axvline(start, color="r")
+        plt.axvline(stop, color="r")
+        plt.savefig("name" + ".png")
+        plt.clf()
+
+        yb = yb[start: stop]
+        k = np.arange(0, yb.shape[0])
+        self.plot("5.1", k, np.abs(yb))
+        self.plot("5.2", k, np.angle(yb))
+
         b = wcs.decode_baseband_signal(np.abs(yb), np.angle(yb), self.Tb, self.fs)
         k = np.arange(0, b.shape[0])
-        self.plot("5", k, b)
+        self.plot("6", k, b)
 
         str = wcs.decode_string(b)
         print(str)
