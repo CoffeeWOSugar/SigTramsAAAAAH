@@ -5,6 +5,7 @@ import soundfile as sf
 from scipy import signal
 import matplotlib.pyplot as plt
 import sounddevice as sd
+import random
 
 
 class Transmitter:
@@ -43,10 +44,10 @@ class Transmitter:
         xt = signal.lfilter(self.b, self.a, xm)
 
         xt = np.concatenate((np.zeros(32000), xt, np.zeros(32000)))
-        k = np.arange(0, xt.shape[0])
-        brus_k = 0.2*brus(k/self.fs)
+        #k = np.arange(0, xt.shape[0])
+        #brus_k = 0.2*brus(k/self.fs)
 
-        xt = xt + brus_k
+        #xt = xt + brus_k
 
         #for i, e in enumerate(xt):
         #    xt += brus(i/self.fs)
@@ -87,9 +88,22 @@ def main():
     #exit()
     with open("message.txt", "r") as f:
         txt = f.read()
-        txt = "Spageth monster gillar att eat bjorns spageth"
+        txt = "Hejsan"
         #txt = "a"
         tr.do_you_enjoy_sounding(txt)
+
+    bits = []
+    random.seed(3345678)
+    for _ in range(100):
+        bits.append(random.randint(0, 1))
+    print(bits)
+    bit_array = np.array([True if bit==1 else False for bit in bits])
+    print(bit_array)
+    xb = wcs.encode_baseband_signal(bit_array, tr.Tb, tr.fs)
+
+    xt = tr.get_transmit_signal(xb)
+    xt = np.concatenate((np.zeros(32000), xt, np.zeros(32000)))
+    #sf.write("fil2.wav",xt, tr.fs)
     
 
 if __name__ == "__main__":
