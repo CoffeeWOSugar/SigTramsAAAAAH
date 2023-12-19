@@ -33,7 +33,7 @@ class Transmitter:
         xc = self.Ac*np.sin(k*self.OMEGAc)
         return xc*xb
 
-    def do_you_enjoy_sounding(self, data):
+    def save_string_as_sound(self, data):
         bits = wcs.encode_string(data)
         #bits = np.concatenate((np.zeros(8), bits))
         #bits = [False, True]
@@ -90,7 +90,7 @@ def main():
         txt = f.read()
         txt = "Hejsan"
         #txt = "a"
-        tr.do_you_enjoy_sounding(txt)
+        tr.save_string_as_sound(txt)
 
     bits = []
     random.seed(3345678)
