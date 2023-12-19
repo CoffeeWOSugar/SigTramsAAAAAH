@@ -48,7 +48,7 @@ def main():
 
     else:
         print('Warning: No input arguments, using defaults.', file=sys.stderr)
-        data = "S"
+        data = "Test"
 
     # Convert string to bit sequence or string bit sequence to numeric bit
     # sequence

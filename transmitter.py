@@ -88,7 +88,9 @@ def main():
     #exit()
     with open("message.txt", "r") as f:
         txt = f.read()
-        txt = "Hejsan"
+        txt = "Hejsan!"
+        c = wcs.encode_string(txt)
+        print(wcs.decode_string(c))
         #txt = "a"
         tr.save_string_as_sound(txt)
 
